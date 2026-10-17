@@ -1,0 +1,146 @@
+================================================================================
+SecureBank - Retail Banking Portal - HOW TO RUN (every file explained)
+================================================================================
+A realistic mini banking app (login, SMS OTP, dashboard, accounts, transfer,
+transactions, payees, cards, support, profile). Five vulnerabilities are live in
+the vulnerable version
+
+--------------------------------------------------------------------------------
+FOLDER STRUCTURE
+--------------------------------------------------------------------------------
+  Report1_Business_Problem.docx          Report 1 (the business problem)
+  Report2_Architecture.docx              Report 2 (language, database, stack, diagrams)
+  Report3_Analysis_and_Solution.docx     Report 3 (all 6 vulnerabilities, screenshots, impact, cybersecurity steps, flowcharts)
+  HOW_TO_RUN.txt                         this file
+
+  app_vulnerable/   the vulnerable app
+       app_vulnerable.py, templates_v1/, static/, requirements.txt
+  app_fixed/        the fixed app
+       app_fixed.py, templates_v2/, static/, requirements.txt
+  Test_Demo/        everything to reproduce the security audit yourself
+       app_vulnerable.py, app_fixed.py  (copies, so the scripts below can run)
+       templates_v1/, templates_v2/, static/
+       exploit_demo.py, test_crosscheck.py, run_bandit.py, run_pip_audit.py
+       bandit_vulnerable.txt, bandit_fixed.txt, test_results.txt, pip_audit.txt
+       requirements.txt
+
+--------------------------------------------------------------------------------
+STEP 0 - INSTALL PYTHON AND THE LIBRARIES (once)
+--------------------------------------------------------------------------------
+Check Python 3 is installed:
+   Windows:    python --version
+   Mac/Linux:  python3 --version
+If missing, install from https://www.python.org/downloads/
+
+Open a terminal IN THE FOLDER YOU WANT TO RUN (app_vulnerable, app_fixed or
+Test_Demo), then create a virtual environment and install everything:
+
+   Windows (PowerShell):
+      python -m venv venv
+      venv\Scripts\activate
+      pip install flask flask-wtf werkzeug bandit pip-audit pytest
+
+   Mac / Linux:
+      python3 -m venv venv
+      source venv/bin/activate
+      pip install flask flask-wtf werkzeug bandit pip-audit pytest
+
+DEMO LOGINS:  alice / Password@123  (Rs 85,000)   bob / Hunter2!  (Rs 40,000)   admin / admin
+
+================================================================================
+RUNNING EACH FILE
+================================================================================
+
+--------------------------------------------------------------------------------
+1. app_vulnerable.py   (the vulnerable banking portal)
+--------------------------------------------------------------------------------
+   cd app_vulnerable         (then activate venv and install, Step 0)
+   python app_vulnerable.py
+Open http://127.0.0.1:5000 and log in as alice / Password@123.
+WARNING: this version binds to 0.0.0.0 with debug on (part of the demo). Run it
+only on your own laptop, never on public or shared Wi-Fi. Press Ctrl+C to stop.
+If a login ever fails: delete the file bank_vulnerable.db and restart.
+
+--------------------------------------------------------------------------------
+2. app_fixed.py   (the fixed banking portal)
+--------------------------------------------------------------------------------
+This version needs a secret key set first (it refuses to start without one):
+
+   cd app_fixed              (then activate venv and install, Step 0)
+   Windows (PowerShell):
+      $env:SECRET_KEY = python -c "import secrets;print(secrets.token_hex(32))"
+      python app_fixed.py
+   Mac / Linux:
+      export SECRET_KEY="$(python -c 'import secrets;print(secrets.token_hex(32))')"
+      python app_fixed.py
+
+Open http://127.0.0.1:5000, log in as alice / Password@123; it now asks for a
+6-digit OTP (shown on the screen for this demo). Only one app can run at a time
+(both use port 5000). If a login fails: delete bank_fixed.db and restart.
+
+--------------------------------------------------------------------------------
+3. exploit_demo.py   (walks all the attacks, before vs after)   [in Test_Demo]
+--------------------------------------------------------------------------------
+   cd Test_Demo              (then activate venv and install, Step 0)
+   python exploit_demo.py
+It runs each attack against both apps and prints a table showing every
+vulnerability is EXPLOITABLE in the vulnerable app and BLOCKED in the fixed app.
+It ends with: "every live vuln exploitable in V1 and blocked in V2".
+
+--------------------------------------------------------------------------------
+4. test_crosscheck.py   (automated pass/fail tests)            [in Test_Demo]
+--------------------------------------------------------------------------------
+   cd Test_Demo
+   python test_crosscheck.py          (plain run, prints PASS/FAIL per check)
+   -- or --
+   pytest -v test_crosscheck.py       (same tests via pytest)
+Expected result: all checks pass (15 passed). The saved output is in
+test_results.txt. Each check proves one vulnerability is real in the vulnerable
+app and closed in the fixed app.
+
+--------------------------------------------------------------------------------
+5. run_bandit.py   (runs the Bandit security scanner on BOTH apps) [in Test_Demo]
+--------------------------------------------------------------------------------
+   cd Test_Demo
+   python run_bandit.py
+It scans app_vulnerable.py and app_fixed.py and prints a before/after summary:
+   app_vulnerable.py  ->  High: 1   Medium: 2   Low: 1
+   app_fixed.py       ->  High: 0   Medium: 0   Low: 0
+It also re-saves the reports to bandit_vulnerable.txt and bandit_fixed.txt.
+(You can also scan directly:  bandit -r app_vulnerable.py  and  bandit -r app_fixed.py )
+
+--------------------------------------------------------------------------------
+6. run_pip_audit.py   (runs the pip-audit dependency scanner)  [in Test_Demo]
+--------------------------------------------------------------------------------
+   cd Test_Demo
+   python run_pip_audit.py
+It checks the libraries in requirements.txt against a public database of known
+vulnerabilities and prints the result (expected: 'no known vulnerabilities').
+It also re-saves the report to pip_audit.txt.
+(You can also scan directly:  pip-audit -r requirements.txt )
+
+--------------------------------------------------------------------------------
+7. The .txt evidence files (nothing to run - just open them)   [in Test_Demo]
+--------------------------------------------------------------------------------
+   bandit_vulnerable.txt   the saved Bandit scan of the vulnerable app (4 issues)
+   bandit_fixed.txt        the saved Bandit scan of the fixed app (0 issues)
+   test_results.txt        the saved output of the test suite
+   pip_audit.txt           the dependency scan (no known vulnerabilities)
+
+
+
+================================================================================
+QUICK WAY TO CHECK EACH VULNERABILITY IN THE BROWSER (vulnerable app)
+================================================================================
+1 SQL injection:   login username  x' OR '1'='1' --  , any password -> logged in.
+2 IDOR:            as alice, open Accounts -> View full account, change the URL to
+                   /account/2 -> you see Bob's account.
+3 Weak auth:       log in with wrong passwords repeatedly -> never locks; after
+                   login the dashboard warns 'password only'.
+4 CSRF:            on the dashboard click "Claim prize" -> Rs 500 is transferred to
+                   an unknown account with no confirmation.
+5 Phishing:        click "Re-verify now" (a ?next= link) -> after login you land on
+                   a fake page asking for card number and ATM PIN.
+In the fixed app each of these is blocked (OTP + lockout, 403, CSRF token, redirect
+allow-list, and a fraud-awareness banner). Full details are in Report 3.
+================================================================================

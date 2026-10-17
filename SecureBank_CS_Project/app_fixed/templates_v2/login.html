@@ -1,0 +1,13 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Login &middot; SecureBank</title><link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></head><body>
+<div class="auth-wrap"><div class="auth-card">
+  <div class="auth-head"><div class="mark">S</div><h1>SecureBank</h1><p>Sign in to your account</p></div>
+  {% if error %}<div class="flash err">{{ error }}</div>{% endif %}
+    <form method="post" action="{{ url_for('login') }}{% if next %}?next={{ next }}{% endif %}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>Username</label><input name="username" placeholder="e.g. alice" autofocus>
+    <label>Password</label><input name="password" type="password" placeholder="Your password">
+    <button class="btn block" style="margin-top:20px">Sign in</button>
+  </form>
+  <div class="demo-note">Demo: <b>alice</b> / Password@123 &nbsp;|&nbsp; <b>bob</b> / Hunter2!</div>
+</div></div></body></html>

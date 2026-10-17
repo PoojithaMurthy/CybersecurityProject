@@ -1,0 +1,30 @@
+{% extends "base.html" %}{% set active='dashboard' %}{% block title %}Dashboard &middot; SecureBank{% endblock %}
+{% block body %}
+<div class="topline"><h1>Dashboard</h1><div class="hi">Welcome back, {{ u['name'] }}</div></div>
+{% if note %}<div class="flash {{ 'err' if 'CSRF' in note else 'ok' }}">{{ note }}</div>{% endif %}
+{% if single_factor_warn %}<div class="flash err"><b>&#9888; Vuln 4 (weak authentication):</b>
+  you signed in with a <b>password only</b> - no second step, and failed logins are never limited.</div>{% endif %}
+
+<!-- in-app bait links that drive the CSRF and phishing demos -->
+<div class="bait"><div class="txt"><b>&#127881; Congratulations!</b> You've won our &#8377;1,00,000 lucky draw! Claim your prize before it expires.</div>
+  <a class="btn sm" href="{{ url_for('promo') }}">Claim prize</a></div>
+<div class="bait" style="background:linear-gradient(90deg,#fde8e8,#f8d4d4);border-color:#e39d9d">
+  <div class="txt" style="color:#7a1f1f"><b>&#9888; Security alert:</b> unusual activity detected. Re-verify your card to secure your account.</div>
+  <a class="btn sm" style="background:linear-gradient(90deg,#c0392b,#e05a4a)" href="{{ url_for("login") }}?next=/claim-reward-verify">Re-verify now</a></div>
+
+<div class="grid">
+  <div class="card balance-card"><div class="label">Available balance</div>
+    <div class="amt">&#8377; {{ '{:,.2f}'.format(u['balance']) }}</div>
+    <div class="acc">{{ u['acc_type'] }} &bull; A/C {{ u['acc_no'] }}</div></div>
+  <div class="card stat"><div class="label">Card</div><div class="val">&bull;&bull;&bull;&bull; {{ u['card_no'][-4:] }}</div>
+    <div class="muted" style="font-size:.82rem;margin-top:4px">Expires {{ u['card_exp'] }}</div></div>
+  <div class="card stat"><div class="label">Quick transfer</div>
+    <a class="btn block" style="margin-top:10px" href="{{ url_for('transfer') }}">Send money</a></div>
+</div>
+<div class="card"><h2>Recent transactions</h2>
+  <table><tr><th>Date</th><th>Details</th><th class="right">Amount</th></tr>
+  {% for t in txns %}<tr><td>{{ t['date'] }}</td><td>{{ t['party'] }}</td>
+    <td class="right {{ 'amt-credit' if t['amount']>0 else 'amt-debit' }}">
+    {{ '+' if t['amount']>0 else '' }}&#8377; {{ '{:,.0f}'.format(t['amount']) }}</td></tr>{% endfor %}
+  </table></div>
+{% endblock %}

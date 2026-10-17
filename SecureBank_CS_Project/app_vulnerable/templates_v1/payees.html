@@ -1,0 +1,8 @@
+{% extends "base.html" %}{% set active='payees' %}{% block title %}Payees{% endblock %}
+{% block body %}<div class="topline"><h1>Payees</h1></div>
+<div class="card"><table><tr><th>Name</th><th>Account</th></tr>
+{% for p in payees %}<tr><td>{{ p['name'] }}</td><td class="mono">{{ p['acc_no'] }}</td></tr>{% endfor %}</table></div>
+<div class="card" style="max-width:460px"><h2>Add a payee</h2>
+  <form method="post"><label>Name</label><input name="name">
+    <label>Account number</label><input name="acc_no">
+    <button class="btn" style="margin-top:18px">Add payee</button></form></div>{% endblock %}

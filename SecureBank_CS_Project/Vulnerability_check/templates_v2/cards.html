@@ -1,0 +1,9 @@
+{% extends "base.html" %}{% set active='cards' %}{% block title %}Cards{% endblock %}
+{% block body %}<div class="topline"><h1>Cards</h1></div>
+<div class="card" style="max-width:420px;background:linear-gradient(120deg,#1a1a2e,#16213e);color:#fff;border:0">
+  <div style="font-size:.8rem;opacity:.7">SecureBank Debit</div>
+  <div class="mono" style="font-size:1.4rem;letter-spacing:3px;margin:18px 0">&bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; {{ u['card_no'][-4:] }}</div>
+  <div style="display:flex;justify-content:space-between;font-size:.85rem">
+    <span>{{ u['name'] }}</span><span>Exp {{ u['card_exp'] }}</span></div></div>
+<div class="demo-note">Your card number, CVV and PIN are never shown in full here - a real bank masks them.
+  Only the last 4 digits are displayed.</div>{% endblock %}

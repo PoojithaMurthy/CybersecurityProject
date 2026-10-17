@@ -1,0 +1,9 @@
+{% extends "base.html" %}{% set active='accounts' %}{% block title %}Accounts{% endblock %}
+{% block body %}<div class="topline"><h1>Accounts</h1></div>
+<div class="card balance-card" style="max-width:420px"><div class="label">{{ u['acc_type'] }} account</div>
+  <div class="amt">&#8377; {{ '{:,.2f}'.format(u['balance']) }}</div>
+  <div class="acc">A/C {{ u['acc_no'] }}</div></div>
+<div class="card"><h2>Account holder</h2>
+  <p class="muted">{{ u['name'] }} &bull; {{ u['email'] }}</p>
+  <a class="btn sm secondary" href="{{ url_for('account_detail', uid=u['id']) }}">View full account &amp; statement</a>
+</div>{% endblock %}

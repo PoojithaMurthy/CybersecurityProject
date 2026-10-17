@@ -1,0 +1,15 @@
+{% extends "base.html" %}{% set active='support' %}{% block title %}Support{% endblock %}
+{% block body %}<div class="topline"><h1>Support tickets</h1></div>
+<div class="card">{% for t in tickets %}
+  <div style="padding:12px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:start">
+    <div><b>{{ t['subject'] }}</b> <span class="chip">{{ t['status'] }}</span>
+      <div class="muted" style="font-size:.88rem;margin-top:3px">{{ t['message'] }}</div></div>
+    {% if t['status'] != 'closed' %}
+    <form method="post" action="{{ url_for('close_ticket', tid=t['id']) }}">
+      <button class="btn sm secondary">Close</button></form>{% endif %}
+  </div>
+{% else %}<p class="muted">No tickets yet.</p>{% endfor %}</div>
+<div class="card" style="max-width:520px"><h2>Raise a new ticket</h2>
+  <form method="post"><label>Subject</label><input name="subject" placeholder="Short summary">
+    <label>Message</label><textarea name="message" placeholder="Describe your issue"></textarea>
+    <button class="btn" style="margin-top:16px">Submit ticket</button></form></div>{% endblock %}

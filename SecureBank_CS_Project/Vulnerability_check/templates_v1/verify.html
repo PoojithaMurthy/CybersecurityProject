@@ -1,0 +1,20 @@
+<!doctype html><html><head><meta charset="utf-8"><title>SecureBank - Verify your card</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></head>
+<body><div class="auth-wrap"><div class="auth-card">
+  <div class="auth-head"><div class="mark">S</div><h1>SecureBank</h1>
+    <p style="color:#c0392b"><b>&#9888; Your account is compromised</b></p></div>
+  <p class="muted" style="text-align:center">Unusual activity was detected. To secure your account,
+    re-verify your debit card now.</p>
+  <label>Debit card number</label><input id="c" placeholder="1234 5678 9012 3456">
+  <label>ATM PIN</label><input id="p" type="password" placeholder="&bull;&bull;&bull;&bull;" maxlength="6">
+  <button class="btn block" style="margin-top:20px" onclick="steal()">Verify &amp; secure account</button>
+  <div class="flash err" id="s" style="display:none;margin-top:16px"></div>
+  <div class="demo-note">This is the phishing page (Vuln 6 - open redirect). It is <b>NOT</b> real
+    SecureBank - note the URL is <span class="mono">/claim-reward-verify</span>, not a real bank page.
+    The login sent you here via <span class="mono">?next=</span>, so you trusted it. A real bank never
+    asks for your full card number and ATM PIN on a web page.</div>
+</div></div>
+<script>function steal(){var c=document.getElementById('c').value,p=document.getElementById('p').value;
+var s=document.getElementById('s');s.style.display='block';
+s.innerHTML='&#9888; Just stolen by the fake site &rarr; Debit card: <b>'+(c||'(empty)')+'</b>, ATM PIN: <b>'+(p||'(empty)')+'</b>';}</script>
+</body></html>

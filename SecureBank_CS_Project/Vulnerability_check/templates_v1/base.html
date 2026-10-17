@@ -1,0 +1,25 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}SecureBank{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></head><body>
+{% block shell %}
+<div class="shell">
+  <aside class="sidebar">
+    <div class="sb-brand"><span class="mark">S</span> SecureBank</div>
+    <nav class="sb-nav">
+      <a href="{{ url_for('dashboard') }}" class="{{ 'active' if active=='dashboard' }}">&#127968; Dashboard</a>
+      <a href="{{ url_for('accounts') }}" class="{{ 'active' if active=='accounts' }}">&#128179; Accounts</a>
+      <a href="{{ url_for('transfer') }}" class="{{ 'active' if active=='transfer' }}">&#128184; Transfer</a>
+      <a href="{{ url_for('transactions') }}" class="{{ 'active' if active=='transactions' }}">&#128203; Transactions</a>
+      <a href="{{ url_for('payees') }}" class="{{ 'active' if active=='payees' }}">&#128100; Payees</a>
+      <a href="{{ url_for('cards') }}" class="{{ 'active' if active=='cards' }}">&#128181; Cards</a>
+      <a href="{{ url_for('support') }}" class="{{ 'active' if active=='support' }}">&#128222; Support</a>
+      <a href="{{ url_for('profile') }}" class="{{ 'active' if active=='profile' }}">&#9881;&#65039; Profile</a>
+    </nav>
+    <div class="sb-user">{{ session.get('username') }}<br><a href="{{ url_for('logout') }}" style="color:#9fb6cf">Log out</a></div>
+  </aside>
+  <main class="main">{% block body %}{% endblock %}
+    <div class="foot">SecureBank &middot; demo environment &middot; not a real bank</div>
+  </main>
+</div>{% endblock %}
+</body></html>

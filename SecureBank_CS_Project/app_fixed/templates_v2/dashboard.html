@@ -1,0 +1,29 @@
+{% extends "base.html" %}{% set active='dashboard' %}{% block title %}Dashboard &middot; SecureBank{% endblock %}
+{% block body %}
+<div class="topline"><h1>Dashboard</h1><div class="hi">Welcome back, {{ u['name'] }}</div></div>
+{% if note %}<div class="flash ok">{{ note }}</div>{% endif %}
+<div class="card" style="border-left:4px solid var(--warn)">
+  <h2>&#128272; Stay safe from fraud</h2>
+  <ul style="margin:8px 0 0;padding-left:20px;color:var(--muted);font-size:.92rem;line-height:1.7">
+    <li>SecureBank will <b>never</b> ask for your card number, ATM PIN, CVV or OTP by call, SMS, email or web page.</li>
+    <li>We never send "lottery", "cashback" or "reward" links. Ignore and delete them.</li>
+    <li>Always check the address bar shows the genuine SecureBank URL before entering any detail.</li>
+    <li>Log out when you finish, and never bank on public or shared Wi-Fi.</li>
+  </ul>
+</div>
+<div class="grid">
+  <div class="card balance-card"><div class="label">Available balance</div>
+    <div class="amt">&#8377; {{ '{:,.2f}'.format(u['balance']) }}</div>
+    <div class="acc">{{ u['acc_type'] }} &bull; A/C {{ u['acc_no'] }}</div></div>
+  <div class="card stat"><div class="label">Card</div><div class="val">&bull;&bull;&bull;&bull; {{ u['card_no'][-4:] }}</div>
+    <div class="muted" style="font-size:.82rem;margin-top:4px">Expires {{ u['card_exp'] }}</div></div>
+  <div class="card stat"><div class="label">Quick transfer</div>
+    <a class="btn block" style="margin-top:10px" href="{{ url_for('transfer') }}">Send money</a></div>
+</div>
+<div class="card"><h2>Recent transactions</h2>
+  <table><tr><th>Date</th><th>Details</th><th class="right">Amount</th></tr>
+  {% for t in txns %}<tr><td>{{ t['date'] }}</td><td>{{ t['party'] }}</td>
+    <td class="right {{ 'amt-credit' if t['amount']>0 else 'amt-debit' }}">
+    {{ '+' if t['amount']>0 else '' }}&#8377; {{ '{:,.0f}'.format(t['amount']) }}</td></tr>{% endfor %}
+  </table></div>
+{% endblock %}
